@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>User Articles</h1>
+<ul id="articles">
+
+</ul>
+<script>
+    document.addEventListener('DOMContentLoaded',function (){
+        var token = localStorage.getItem('token')
+        if(token === null || token == undefined){
+            alert("Please login to continue")
+            window.location.href = 'login.html'
+        }
+        var apiUrl = 'http://localhost:8080/api/v1/user/articles'
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function (){
+            if (xhr.readyState === 4 ){
+                if (xhr.status === 200){
+                    var jsonObject = JSON.parse(xhr.responseText);
+                    var listArticle = document.getElementById('articles')
+                    var content = ``;
+                    for (var i=0; i < jsonObject.length; i++) {
+                        content += `<li>${jsonObject[i].title }</li>`
+                    }
+                    listArticle.innerHTML = content;
+                }else if (xhr.status == 403){
+                    localStorage.removeItem('token')
+                    alert("Please login to continue")
+                    window.location.href = 'login.html'
+                }
+            }
+        }
+        xhr.open('POST', registerApiUrl, false);
+        xhr.setRequestHeader('Content-type','application/json')
+        xhr.setRequestHeader('Authorization','Bearer' + token)
+        xhr.send(JSON.stringify(obj))
+    })
+</script>
+</body>
+</html>
